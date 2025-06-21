@@ -8,6 +8,7 @@ import {
   ProgressBar,
 } from "@/components/dashboard/charts";
 import { StatGrid } from "@/components/dashboard/stat-grid";
+import { FunnelSection } from "@/components/dashboard/funnel-section";
 import {
   Youtube,
   Users,
@@ -200,6 +201,9 @@ export default function Dashboard() {
             </MetricCard>
           </FadeUp>
         </div>
+
+        {/* Third Section - Sales Funnel Wave Chart */}
+        <FunnelSection />
       </div>
     </div>
   );

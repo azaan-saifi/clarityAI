@@ -298,19 +298,173 @@ export function ProgressBar({
   className,
 }: ProgressBarProps) {
   return (
-    <div className={cn("w-full flex items-end h-full", className)}>
-      <div className="w-full h-2 bg-zinc-700 rounded-full overflow-hidden">
+    <div className={cn("mt-4", className)}>
+      <div className="w-full bg-zinc-700 rounded-full h-2">
         <div
-          className="h-full rounded-full transition-all duration-1000 ease-out relative"
+          className="h-2 rounded-full transition-all duration-500 ease-out"
           style={{
             width: `${percentage}%`,
-            background: `linear-gradient(90deg, ${color} 0%, #7de3a0 100%)`,
+            background: `linear-gradient(90deg, ${color} 0%, ${color}CC 100%)`,
           }}
-        >
-          {/* Shimmer effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
-        </div>
+        />
       </div>
+    </div>
+  );
+}
+
+interface FunnelDataPoint {
+  stage: string;
+  value: number;
+  displayValue: string;
+  icon: React.ReactNode;
+}
+
+interface ConversionCard {
+  fromStage: string;
+  toStage: string;
+  fromValue: number;
+  toValue: number;
+  conversionRate: number;
+  fromIcon: React.ReactNode;
+  toIcon: React.ReactNode;
+}
+
+interface FunnelWaveChartProps {
+  data: FunnelDataPoint[];
+  className?: string;
+  onHover?: (conversion: ConversionCard | null) => void;
+}
+
+export function FunnelWaveChart({
+  data,
+  className,
+  onHover,
+}: FunnelWaveChartProps) {
+  const chartData = {
+    labels: data.map((point) => point.stage),
+    datasets: [
+      {
+        data: data.map((point) => point.value),
+        borderColor: "#9df5c4",
+        backgroundColor: "rgba(157, 245, 196, 0.1)",
+        borderWidth: 3,
+        fill: true,
+        tension: 0.6, // Higher tension for more wave-like curves
+        pointBackgroundColor: "#9df5c4",
+        pointBorderColor: "#1a1a1a",
+        pointBorderWidth: 3,
+        pointRadius: 8,
+        pointHoverRadius: 12,
+        pointHoverBackgroundColor: "#7de3a0",
+        pointHoverBorderColor: "#9df5c4",
+        pointHoverBorderWidth: 4,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false }, // Disable default tooltip since we'll use custom cards
+    },
+    scales: {
+      x: {
+        display: true,
+        grid: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          color: "#888888",
+          font: {
+            size: 12,
+            weight: 500,
+          },
+          padding: 20,
+        },
+        border: {
+          display: false,
+        },
+      },
+      y: {
+        display: true,
+        position: "left" as const,
+        grid: {
+          color: "rgba(63, 63, 70, 0.3)",
+          drawBorder: false,
+        },
+        ticks: {
+          color: "#888888",
+          font: {
+            size: 11,
+          },
+          callback: function (value: string | number) {
+            const numValue = Number(value);
+            if (numValue >= 1000) {
+              return (numValue / 1000).toFixed(1) + "K";
+            }
+            return numValue.toString();
+          },
+          padding: 15,
+        },
+        border: {
+          display: false,
+        },
+      },
+    },
+    elements: {
+      point: {
+        radius: 8,
+        hoverRadius: 12,
+        backgroundColor: "#9df5c4",
+        borderColor: "#1a1a1a",
+        borderWidth: 3,
+      },
+    },
+    interaction: {
+      intersect: false,
+      mode: "point" as const,
+    },
+    onHover: (event: ChartEvent, elements: ActiveElement[]) => {
+      const target = event.native?.target as HTMLElement;
+      if (target) {
+        target.style.cursor = elements.length > 0 ? "pointer" : "default";
+      }
+
+      if (elements.length > 0 && onHover) {
+        const pointIndex = elements[0].index;
+
+        // Show conversion for all points except the first one
+        if (pointIndex > 0) {
+          const fromPoint = data[pointIndex - 1];
+          const toPoint = data[pointIndex];
+          const conversionRate = (toPoint.value / fromPoint.value) * 100;
+
+          const conversion: ConversionCard = {
+            fromStage: fromPoint.stage,
+            toStage: toPoint.stage,
+            fromValue: fromPoint.value,
+            toValue: toPoint.value,
+            conversionRate,
+            fromIcon: fromPoint.icon,
+            toIcon: toPoint.icon,
+          };
+
+          onHover(conversion);
+        } else {
+          onHover(null);
+        }
+      } else if (onHover) {
+        onHover(null);
+      }
+    },
+  };
+
+  return (
+    <div className={cn("w-full h-full relative", className)}>
+      <Line data={chartData} options={options} />
     </div>
   );
 }
