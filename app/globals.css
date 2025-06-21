@@ -50,3 +50,8 @@ body {
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
+
+/* Custom shadow effects */
+.shadow-glowLarge {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 20px rgba(157, 245, 196, 0.2);
+}
