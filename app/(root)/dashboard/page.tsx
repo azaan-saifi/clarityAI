@@ -22,7 +22,7 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react";
-import { getVideosInfo, Video } from "@/lib/actions/youtube";
+import { getVideosInfo, Video } from "@/lib/actions/youtube.actions";
 import {
   calculateViewsByPeriod,
   getChartData,

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { FadeUp } from "@/components/animations/fade-up";
 import { VideoCard } from "@/components/videos/video-card";
 import DateFilter, { FilterPeriod } from "@/components/dashboard/date-filter";
-import { getVideosInfo, Video } from "@/lib/actions/youtube";
+import { getVideosInfo, Video } from "@/lib/actions/youtube.actions";
 import {
   calculateVideoMetrics,
   calculateViewsByPeriod,

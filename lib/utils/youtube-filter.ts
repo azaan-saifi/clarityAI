@@ -1,4 +1,4 @@
-import { Video } from '../actions/youtube'
+import { Video } from '../actions/youtube.actions'
 import { FilterPeriod } from '../../components/dashboard/date-filter'
 
 /**

@@ -30,7 +30,7 @@ interface Thumbnail {
 }
 
 export async function getVideosInfo(): Promise<Video[]> {
-  const url = 'https://youtube-scraper3.p.rapidapi.com/api/v1/channel/videos?channel_id=UCjEXry5mjyhACMxTxCu7VWg';
+  const url = `https://youtube-scraper3.p.rapidapi.com/api/v1/channel/videos?channel_id=${process.env.YOUTUBE_CHANNEL_ID}`;
   const options = {
     method: 'GET',
     headers: {

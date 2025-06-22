@@ -1,6 +1,6 @@
 'use server'
 
-import { getVideosInfo, Video } from './youtube'
+import { getVideosInfo, Video } from './youtube.actions'
 import { FilterPeriod } from '../../components/dashboard/date-filter'
 import { calculateDashboardMetrics, getChartData, calculateVideoMetrics } from '../utils/youtube-filter'
 

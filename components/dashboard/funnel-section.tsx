@@ -5,7 +5,7 @@ import { FadeUp } from "@/components/animations/fade-up";
 import { FunnelWaveChart } from "@/components/dashboard/charts";
 import { ConversionCards } from "@/components/dashboard/conversion-cards";
 import { Youtube, Users, Phone, CheckCircle, Shield, Star } from "lucide-react";
-import { Video } from "@/lib/actions/youtube";
+import { Video } from "@/lib/actions/youtube.actions";
 import { FilterPeriod } from "./date-filter";
 import { calculateViewsByPeriod } from "@/lib/utils/youtube-filter";
 

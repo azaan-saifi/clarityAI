@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { FadeUp } from "@/components/animations/fade-up";
 import { FilterPeriod } from "@/components/dashboard/date-filter";
-import { generateAIInsights } from "@/lib/actions/ai-insights";
-import { getInsightsData } from "@/lib/actions/insights";
+import { generateAIInsights } from "@/lib/actions/ai-insights.actions";
+import { getInsightsData } from "@/lib/actions/insights.actions";
 import { LoadingState } from "./loading-state";
 import { InsightsContent } from "./insights-content";
 import { AIInsightsCallToAction } from "./ai-insights-cta";

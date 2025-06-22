@@ -1,7 +1,7 @@
 'use server'
 
 import Anthropic from '@anthropic-ai/sdk'
-import { InsightsData } from './insights'
+import { InsightsData } from './insights.actions'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
