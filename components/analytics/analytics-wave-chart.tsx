@@ -34,24 +34,28 @@ interface AnalyticsData {
     value: string | number;
     change: { value: string; type: "positive" | "negative"; label: string };
     trends: number[];
+    labels: string[];
   };
   pageVisits: {
     title: string;
     value: string | number;
     change: { value: string; type: "positive" | "negative"; label: string };
     trends: number[];
+    labels: string[];
   };
   calls: {
     title: string;
     value: string | number;
     change: { value: string; type: "positive" | "negative"; label: string };
     trends: number[];
+    labels: string[];
   };
   revenue: {
     title: string;
     value: string | number;
     change: { value: string; type: "positive" | "negative"; label: string };
     trends: number[];
+    labels: string[];
   };
 }
 
@@ -271,6 +275,14 @@ function MultiLineChart({
 export function AnalyticsWaveChart({ data }: AnalyticsWaveChartProps) {
   const [selectedMetric, setSelectedMetric] = useState<MetricKey>("summary");
 
+  // Helper function to format numbers
+  const formatValue = (value: string | number) => {
+    if (typeof value === "string") return value;
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+    return value.toString();
+  };
+
   const metrics = [
     {
       key: "summary" as MetricKey,
@@ -283,7 +295,7 @@ export function AnalyticsWaveChart({ data }: AnalyticsWaveChartProps) {
     {
       key: "pageVisits" as MetricKey,
       title: "Page Visits",
-      subtitle: "824.2K",
+      subtitle: formatValue(data.pageVisits.value),
       icon: <Eye className="w-5 h-5" />,
       color: "#64b5f6",
       change: data.pageVisits.change,
@@ -291,7 +303,7 @@ export function AnalyticsWaveChart({ data }: AnalyticsWaveChartProps) {
     {
       key: "calls" as MetricKey,
       title: "Calls",
-      subtitle: "31.1K",
+      subtitle: formatValue(data.calls.value),
       icon: <Phone className="w-5 h-5" />,
       color: "#ffd700",
       change: data.calls.change,
@@ -299,7 +311,7 @@ export function AnalyticsWaveChart({ data }: AnalyticsWaveChartProps) {
     {
       key: "revenue" as MetricKey,
       title: "Revenue",
-      subtitle: "8.0K",
+      subtitle: `$${formatValue(data.revenue.value)}`,
       icon: <DollarSign className="w-5 h-5" />,
       color: "#ff6b6b",
       change: data.revenue.change,
@@ -327,26 +339,8 @@ export function AnalyticsWaveChart({ data }: AnalyticsWaveChartProps) {
     });
   };
 
-  const chartLabels = [
-    "1/19",
-    "1/19",
-    "1/22",
-    "1/23",
-    "2/9",
-    "2/14",
-    "2/21",
-    "2/22",
-    "2/26",
-    "3/12",
-    "3/14",
-    "3/20",
-    "3/24",
-    "3/26",
-    "4/1",
-    "4/4",
-    "4/7",
-    "4/12",
-  ];
+  // Use real data labels from the selected metric or default to pageVisits
+  const chartLabels = data[selectedMetric]?.labels || data.pageVisits.labels;
 
   return (
     <div className="bg-[#1a1a1a] border border-zinc-700 rounded-xl p-3 sm:p-6">

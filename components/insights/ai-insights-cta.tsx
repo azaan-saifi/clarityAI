@@ -11,7 +11,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function AIInsightsCallToAction() {
+interface AIInsightsCallToActionProps {
+  onGenerate: () => void;
+}
+
+export function AIInsightsCallToAction({
+  onGenerate,
+}: AIInsightsCallToActionProps) {
   const features = [
     {
       icon: <Brain className="w-6 h-6" />,
@@ -36,20 +42,20 @@ export function AIInsightsCallToAction() {
       <div className="absolute inset-0 bg-gradient-to-r from-[#9df5c4] via-[#7de3a0]/10 to-[#9df5c4] rounded-3xl blur-3xl transform scale-95"></div>
 
       {/* Main Content */}
-      <div className="relative bg-[#1a1a1a] border border-zinc-700 rounded-2xl p-8 md:p-12 shadow-2xl">
+      <div className="relative bg-[#1a1a1a] border border-zinc-700 rounded-2xl p-6 sm:p-8 md:p-12 shadow-2xl">
         {/* Header */}
         <FadeUp>
-          <div className="mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#9df5c4]/20 rounded-2xl mb-6">
-              <Sparkles className="w-8 h-8 text-[#9df5c4]" />
+          <div className="mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-[#9df5c4]/20 rounded-2xl mb-4 sm:mb-6">
+              <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-[#9df5c4]" />
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">
               Unlock AI-Powered
               <span className="block text-[#9df5c4]">Business Insights</span>
             </h1>
 
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl leading-relaxed">
               Transform your funnel data into actionable strategies. Get
               personalized recommendations to boost conversions and accelerate
               your revenue growth.
@@ -59,19 +65,23 @@ export function AIInsightsCallToAction() {
 
         {/* Features Grid */}
         <FadeUp delay={0.1}>
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-[#0f0f0f] border border-zinc-700 rounded-xl p-6 text-center hover:border-[#9df5c4]/30 transition-all duration-300 hover:transform hover:scale-105"
+                className="bg-[#0f0f0f] border border-zinc-700 rounded-xl p-4 sm:p-6 text-center hover:border-[#9df5c4]/30 transition-all duration-300 hover:transform hover:scale-105"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-[#9df5c4]/20 rounded-xl mb-4">
-                  <div className="text-[#9df5c4]">{feature.icon}</div>
+                <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-[#9df5c4]/20 rounded-xl mb-3 sm:mb-4">
+                  <div className="text-[#9df5c4] text-base sm:text-lg">
+                    {feature.icon}
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-400 text-sm">{feature.description}</p>
+                <p className="text-gray-400 text-xs sm:text-sm">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
@@ -79,28 +89,32 @@ export function AIInsightsCallToAction() {
 
         {/* CTA Button */}
         <FadeUp delay={0.2}>
-          <button
-            className={cn(
-              "group relative inline-flex items-center justify-center",
-              "px-8 py-4 text-lg font-semibold",
-              "bg-gradient-to-r from-[#9df5c4] to-[#7de3a0]",
-              "text-[#1a1a1a] rounded-xl",
-              "transition-all duration-300",
-              "hover:shadow-lg hover:shadow-[#9df5c4]/25",
-              "hover:transform hover:scale-105",
-              "active:scale-95"
-            )}
-          >
-            <Lightbulb className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-            Get AI Insights
-            <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-          </button>
+          <div className="text-center">
+            <button
+              onClick={onGenerate}
+              className={cn(
+                "group relative inline-flex items-center justify-center",
+                "px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold",
+                "bg-gradient-to-r from-[#9df5c4] to-[#7de3a0]",
+                "text-[#1a1a1a] rounded-xl",
+                "transition-all duration-300",
+                "hover:shadow-lg hover:shadow-[#9df5c4]/25",
+                "hover:transform hover:scale-105",
+                "active:scale-95",
+                "w-full sm:w-auto"
+              )}
+            >
+              <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:animate-pulse" />
+              Get AI Insights
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </FadeUp>
 
         {/* Bottom Info */}
         <FadeUp delay={0.3}>
-          <div className="mt-8 pt-6 border-t border-zinc-700">
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400">
+          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-zinc-700">
+            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-400">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#9df5c4] rounded-full"></div>
                 <span>Real-time Analysis</span>
