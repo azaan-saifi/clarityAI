@@ -5,8 +5,16 @@ import { FadeUp } from "@/components/animations/fade-up";
 import { FunnelWaveChart } from "@/components/dashboard/charts";
 import { ConversionCards } from "@/components/dashboard/conversion-cards";
 import { Youtube, Users, Phone, CheckCircle, Shield, Star } from "lucide-react";
+import { Video } from "@/lib/actions/youtube";
+import { FilterPeriod } from "./date-filter";
+import { calculateViewsByPeriod } from "@/lib/utils/youtube-filter";
 
-export function FunnelSection() {
+interface FunnelSectionProps {
+  videos: Video[];
+  selectedPeriod: FilterPeriod;
+}
+
+export function FunnelSection({ videos, selectedPeriod }: FunnelSectionProps) {
   const [hoveredConversion, setHoveredConversion] = useState<{
     fromStage: string;
     toStage: string;
@@ -22,44 +30,66 @@ export function FunnelSection() {
     y: 0,
   });
 
-  const funnelData = [
-    {
-      stage: "YouTube Views",
-      value: 27500,
-      displayValue: "27.5k",
-      icon: <Youtube />,
-    },
+  // Get real YouTube views based on selected period
+  const youtubeViews = calculateViewsByPeriod(videos, selectedPeriod);
+
+  // Mock data for other funnel stages (you can replace with real data later)
+  const rawFunnelData = [
+    { stage: "YouTube Views", value: youtubeViews, icon: <Youtube /> },
     {
       stage: "Page Visits",
-      value: 1200,
-      displayValue: "1.2k",
+      value: Math.floor(youtubeViews * 0.044),
       icon: <Users />,
-    },
+    }, // ~4.4% conversion
     {
       stage: "Calls Booked",
-      value: 53,
-      displayValue: "53",
+      value: Math.floor(youtubeViews * 0.002),
       icon: <Phone />,
-    },
+    }, // ~0.2% conversion
     {
       stage: "Calls Accepted",
-      value: 30,
-      displayValue: "30",
+      value: Math.floor(youtubeViews * 0.0011),
       icon: <CheckCircle />,
-    },
+    }, // ~0.11% conversion
     {
       stage: "Show-ups",
-      value: 26,
-      displayValue: "26",
+      value: Math.floor(youtubeViews * 0.0009),
       icon: <Shield />,
-    },
+    }, // ~0.09% conversion
     {
       stage: "Closes",
-      value: 7,
-      displayValue: "7",
+      value: Math.floor(youtubeViews * 0.0003),
       icon: <Star />,
-    },
+    }, // ~0.03% conversion
   ];
+
+  // Calculate conversion percentages for chart display
+  const funnelData = rawFunnelData.map((item, index) => {
+    if (index === 0) {
+      // First stage shows 100% (starting point)
+      return {
+        ...item,
+        value: 100,
+        displayValue: `${item.value.toLocaleString()}`,
+        rawValue: item.value,
+      };
+    } else {
+      // Calculate conversion rate from previous stage
+      const conversionRate =
+        rawFunnelData[index - 1].value > 0
+          ? (item.value / rawFunnelData[index - 1].value) * 100
+          : 0;
+
+      return {
+        ...item,
+        value: conversionRate,
+        displayValue: `${item.value.toLocaleString()} (${conversionRate.toFixed(
+          1
+        )}%)`,
+        rawValue: item.value,
+      };
+    }
+  });
 
   const handleMouseMove = (event: React.MouseEvent) => {
     setMousePosition({ x: event.clientX, y: event.clientY });

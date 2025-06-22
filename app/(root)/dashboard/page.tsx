@@ -1,5 +1,9 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { FadeUp } from "@/components/animations/fade-up";
 import { MetricCard } from "@/components/dashboard/metric-card";
+import DateFilter, { FilterPeriod } from "@/components/dashboard/date-filter";
 import {
   LineChart,
   BarChart,
@@ -18,34 +22,102 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react";
+import { getVideosInfo, Video } from "@/lib/actions/youtube";
+import {
+  calculateViewsByPeriod,
+  getChartData,
+  calculateDashboardMetrics,
+} from "@/lib/utils/youtube-filter";
 
 export default function Dashboard() {
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [selectedPeriod, setSelectedPeriod] =
+    useState<FilterPeriod>("current_month");
+  const [youtubeViews, setYoutubeViews] = useState(0);
+  const [chartData, setChartData] = useState<{
+    labels: string[];
+    data: number[];
+  }>({
+    labels: [],
+    data: [],
+  });
+  const [dashboardMetrics, setDashboardMetrics] = useState<ReturnType<
+    typeof calculateDashboardMetrics
+  > | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      setIsLoading(true);
+      try {
+        const videoData = await getVideosInfo();
+        setVideos(videoData);
+        setYoutubeViews(calculateViewsByPeriod(videoData, selectedPeriod));
+        setChartData(getChartData(videoData, selectedPeriod));
+        setDashboardMetrics(
+          calculateDashboardMetrics(videoData, selectedPeriod)
+        );
+      } catch (error) {
+        console.error("Error fetching videos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  useEffect(() => {
+    if (videos.length > 0) {
+      setYoutubeViews(calculateViewsByPeriod(videos, selectedPeriod));
+      setChartData(getChartData(videos, selectedPeriod));
+      setDashboardMetrics(calculateDashboardMetrics(videos, selectedPeriod));
+    }
+  }, [selectedPeriod, videos]);
+
+  const handleFilterChange = (period: FilterPeriod) => {
+    setSelectedPeriod(period);
+  };
+
   return (
     <div className="min-h-screen pt-8">
       <div className="max-w-7xl mx-auto px-6">
-        <FadeUp className="text-start mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-[#9df5c4] to-[#7de3a0] bg-clip-text text-transparent mb-4">
-            Hello, Azaan
-          </h1>
-          <p className="text-gray-400 text-lg">
-            Get real-time insights. Make smarter decisions.
-          </p>
-        </FadeUp>
+        <div className="flex justify-between items-start mb-12">
+          <FadeUp className="text-start">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-[#9df5c4] to-[#7de3a0] bg-clip-text text-transparent mb-4">
+              Hello, Azaan
+            </h1>
+            <p className="text-gray-400 text-lg">
+              Get real-time insights. Make smarter decisions.
+            </p>
+          </FadeUp>
+
+          {/* Filter Component */}
+          <FadeUp delay={0.1} className="min-w-[200px]">
+            <div className="bg-primary-dark border border-zinc-700 rounded-xl p-4">
+              <DateFilter
+                onFilterChange={handleFilterChange}
+                defaultPeriod={selectedPeriod}
+              />
+            </div>
+          </FadeUp>
+        </div>
 
         {/* First Row - 4 Small Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <FadeUp delay={0.1}>
             <MetricCard
               title="YouTube Views"
-              value={3781}
-              change={{ value: "+12.5%", type: "positive" }}
+              value={isLoading ? "Loading..." : youtubeViews}
               icon={<Youtube />}
               size="small"
               className="h-60"
             >
               <LineChart
-                data={[1200, 1450, 1800, 2100, 2400, 3781]}
-                labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                data={chartData.data.length > 0 ? chartData.data : [0]}
+                labels={
+                  chartData.labels.length > 0 ? chartData.labels : ["No Data"]
+                }
               />
             </MetricCard>
           </FadeUp>
@@ -53,8 +125,11 @@ export default function Dashboard() {
           <FadeUp delay={0.2}>
             <MetricCard
               title="Website Visitors"
-              value={159133}
-              change={{ value: "+8.3%", type: "positive" }}
+              value={
+                isLoading
+                  ? "Loading..."
+                  : dashboardMetrics?.websiteVisitors || 0
+              }
               icon={<Users />}
               size="small"
               className="h-60"
@@ -69,8 +144,9 @@ export default function Dashboard() {
           <FadeUp delay={0.3}>
             <MetricCard
               title="Calls Booked"
-              value={1247}
-              change={{ value: "+15.2%", type: "positive" }}
+              value={
+                isLoading ? "Loading..." : dashboardMetrics?.callsBooked || 0
+              }
               icon={<Phone />}
               size="small"
               className="h-60"
@@ -82,8 +158,9 @@ export default function Dashboard() {
           <FadeUp delay={0.4}>
             <MetricCard
               title="Calls Accepted"
-              value={1089}
-              change={{ value: "87.3%", type: "positive" }}
+              value={
+                isLoading ? "Loading..." : dashboardMetrics?.callsAccepted || 0
+              }
               icon={<CheckCircle />}
               size="small"
               className="h-60"
@@ -99,19 +176,20 @@ export default function Dashboard() {
           <FadeUp delay={0.5}>
             <MetricCard
               title="Show-up Rate"
-              value="73.2%"
-              change={{
-                value: "-2.1%",
-                type: "negative",
-                label: "from last month",
-              }}
+              value={
+                isLoading
+                  ? "Loading..."
+                  : `${dashboardMetrics?.showUpRate.toFixed(1) || 0}%`
+              }
               icon={<Shield />}
             >
               <StatGrid
-                stats={[
-                  { value: 797, label: "Showed Up" },
-                  { value: 292, label: "No Show" },
-                ]}
+                stats={
+                  dashboardMetrics?.showUpStats || [
+                    { value: 0, label: "Showed Up" },
+                    { value: 0, label: "No Show" },
+                  ]
+                }
               />
               <LineChart
                 data={[78.5, 75.2, 71.8, 73.2]}
@@ -125,15 +203,16 @@ export default function Dashboard() {
           <FadeUp delay={0.6}>
             <MetricCard
               title="Closes"
-              value={342}
-              change={{ value: "42.9%", type: "positive", label: "close rate" }}
+              value={isLoading ? "Loading..." : dashboardMetrics?.closes || 0}
               icon={<Star />}
             >
               <StatGrid
-                stats={[
-                  { value: 198, label: "High-ticket" },
-                  { value: 144, label: "Discount" },
-                ]}
+                stats={
+                  dashboardMetrics?.closesStats || [
+                    { value: 0, label: "High-ticket" },
+                    { value: 0, label: "Discount" },
+                  ]
+                }
               />
               <StackedBarChart
                 data={{
@@ -149,12 +228,11 @@ export default function Dashboard() {
           <FadeUp delay={0.7}>
             <MetricCard
               title="Revenue Breakdown"
-              value="$1,247,890"
-              change={{
-                value: "+23.7%",
-                type: "positive",
-                label: "from last month",
-              }}
+              value={
+                isLoading
+                  ? "Loading..."
+                  : `$${dashboardMetrics?.totalRevenue.toLocaleString() || 0}`
+              }
               icon={<TrendingUp />}
               size="large"
             >
@@ -162,7 +240,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="text-center p-4 bg-[#9df5c4]/10 border border-[#9df5c4]/20 rounded-lg">
                   <div className="text-2xl font-bold text-[#9df5c4] mb-1">
-                    $847,320
+                    ${dashboardMetrics?.pifRevenue.toLocaleString() || 0}
                   </div>
                   <div className="text-xs text-gray-400 uppercase tracking-wider">
                     Full Payment
@@ -170,7 +248,8 @@ export default function Dashboard() {
                 </div>
                 <div className="text-center p-4 bg-[#9df5c4]/10 border border-[#9df5c4]/20 rounded-lg">
                   <div className="text-2xl font-bold text-[#9df5c4] mb-1">
-                    $400,570
+                    $
+                    {dashboardMetrics?.installmentRevenue.toLocaleString() || 0}
                   </div>
                   <div className="text-xs text-gray-400 uppercase tracking-wider">
                     Installments
@@ -181,9 +260,24 @@ export default function Dashboard() {
               {/* Product List */}
               <div className="space-y-2">
                 {[
-                  { name: "Premium Course", revenue: "$687,450" },
-                  { name: "Coaching Program", revenue: "$342,180" },
-                  { name: "Masterclass", revenue: "$156,890" },
+                  {
+                    name: "Premium Course",
+                    revenue: `$${Math.floor(
+                      (dashboardMetrics?.totalRevenue || 0) * 0.55
+                    ).toLocaleString()}`,
+                  },
+                  {
+                    name: "Coaching Program",
+                    revenue: `$${Math.floor(
+                      (dashboardMetrics?.totalRevenue || 0) * 0.275
+                    ).toLocaleString()}`,
+                  },
+                  {
+                    name: "Masterclass",
+                    revenue: `$${Math.floor(
+                      (dashboardMetrics?.totalRevenue || 0) * 0.175
+                    ).toLocaleString()}`,
+                  },
                 ].map((product, index) => (
                   <div
                     key={index}
@@ -203,7 +297,7 @@ export default function Dashboard() {
         </div>
 
         {/* Third Section - Sales Funnel Wave Chart */}
-        <FunnelSection />
+        <FunnelSection videos={videos} selectedPeriod={selectedPeriod} />
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ interface MetricCardProps {
 export function MetricCard({
   title,
   value,
-  change,
+  // change,
   icon,
   children,
   className,
@@ -85,7 +85,7 @@ export function MetricCard({
       </div>
 
       {/* Change Indicator */}
-      {change && (
+      {/* {change && (
         <div
           className={cn(
             "flex items-center gap-2 mb-4 font-semibold",
@@ -101,7 +101,7 @@ export function MetricCard({
             <span className="text-gray-400 font-normal">{change.label}</span>
           )}
         </div>
-      )}
+      )} */}
 
       {/* Chart or Additional Content */}
       {children && (

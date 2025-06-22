@@ -124,6 +124,7 @@ export function VideoCard({ video }: VideoCardProps) {
                   fill
                   className="object-cover"
                   sizes="160px"
+                  quality={100}
                 />
                 <div className="absolute rounded-lg inset-0 bg-black/20"></div>
               </div>

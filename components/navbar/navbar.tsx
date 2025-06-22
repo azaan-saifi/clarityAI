@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { UserCircle2Icon } from "lucide-react";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { cn } from "@/lib/utils";
 
@@ -15,18 +15,8 @@ const MENU_ITEMS = [
   { id: "insights", label: "Insights", href: "/insights" },
 ];
 
-const MONTHS = [
-  { value: "2024-12", label: "December 2024" },
-  { value: "2024-11", label: "November 2024" },
-  { value: "2024-10", label: "October 2024" },
-  { value: "2024-09", label: "September 2024" },
-  { value: "2024-08", label: "August 2024" },
-];
-
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(MONTHS[0]);
-  const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -58,11 +48,11 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300",
         isScrolled
-          ? "bg-[#0f0f0f]/80 backdrop-blur-md border-b"
+          ? "bg-[#0f0f0f]/80 backdrop-blur-md border-b border-b-zinc-700"
           : "bg-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-8">
         <div className="flex items-center justify-between">
           {/* Logo - Left */}
           <Link href="/dashboard" className="flex items-center space-x-3">
@@ -70,16 +60,16 @@ export function Navbar() {
               <Image
                 src="/clarityAI.png"
                 alt="ClarityAI"
-                width={120}
-                height={120}
-                className="object-contain sm:w-[150px] sm:h-[150px]"
-                priority
+                width={150}
+                height={150}
+                className="object-contain"
+                quality={50}
               />
             </div>
           </Link>
 
           {/* Desktop Menu Items - Center */}
-          <div className="hidden lg:flex items-center justify-center">
+          <div className="hidden lg:flex items-center justify-center -ml-10">
             <div
               className={cn(
                 "flex items-center justify-center transition-all duration-300 gap-1",
@@ -119,71 +109,9 @@ export function Navbar() {
           </div>
 
           {/* Right Side */}
-          <div className="flex items-center gap-3">
-            {/* Month Dropdown - Hidden on small screens */}
-            <div className="hidden sm:block relative">
-              <button
-                onClick={() => setIsMonthDropdownOpen(!isMonthDropdownOpen)}
-                className={cn(
-                  "flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-200",
-                  "bg-[#1a1a1a]/60 backdrop-blur-sm border border-white/10",
-                  "hover:bg-[#2a2a2a]/60 hover:border-white/20",
-                  "focus:outline-none focus:ring-2 focus:ring-[#9df5c4]/50"
-                )}
-              >
-                <span className="text-xs sm:text-sm font-medium text-white">
-                  {selectedMonth.label}
-                </span>
-                <ChevronDown
-                  className={cn(
-                    "w-3 h-3 sm:w-4 sm:h-4 text-gray-400 transition-transform duration-200",
-                    isMonthDropdownOpen && "rotate-180"
-                  )}
-                />
-              </button>
-
-              {/* Dropdown Menu */}
-              {isMonthDropdownOpen && (
-                <div
-                  className={cn(
-                    "absolute right-0 mt-2 w-48 sm:w-56 py-2",
-                    "bg-[#1a1a1a]/95 backdrop-blur-lg border border-white/10 rounded-lg shadow-2xl",
-                    "animate-in fade-in slide-in-from-top-2 duration-200"
-                  )}
-                >
-                  {MONTHS.map((month) => (
-                    <button
-                      key={month.value}
-                      onClick={() => {
-                        setSelectedMonth(month);
-                        setIsMonthDropdownOpen(false);
-                      }}
-                      className={cn(
-                        "w-full px-4 py-2 text-left text-sm transition-colors duration-150",
-                        "hover:bg-[#9df5c4]/10 hover:text-[#9df5c4]",
-                        selectedMonth.value === month.value
-                          ? "text-[#9df5c4] bg-[#9df5c4]/10"
-                          : "text-gray-300"
-                      )}
-                    >
-                      {month.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg bg-[#1a1a1a]/60 backdrop-blur-sm border border-white/10 hover:bg-[#2a2a2a]/60 transition-all duration-200"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5 text-white" />
-              ) : (
-                <Menu className="w-5 h-5 text-white" />
-              )}
-            </button>
+          <div className="flex items-center gap-2">
+            <UserCircle2Icon className="w-8 h-8 text-[#9df5c4] font-light" />
+            <p className="text-[#9df5c4] font-light">Azaan</p>
           </div>
         </div>
 
@@ -206,44 +134,10 @@ export function Navbar() {
                   {item.label}
                 </Link>
               ))}
-
-              {/* Mobile Month Selector */}
-              <div className="sm:hidden px-4 py-2">
-                <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">
-                  Time Period
-                </label>
-                <select
-                  value={selectedMonth.value}
-                  onChange={(e) => {
-                    const month = MONTHS.find(
-                      (m) => m.value === e.target.value
-                    );
-                    if (month) setSelectedMonth(month);
-                  }}
-                  className="w-full px-3 py-2 bg-[#1a1a1a] border border-zinc-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#9df5c4]/50"
-                >
-                  {MONTHS.map((month) => (
-                    <option key={month.value} value={month.value}>
-                      {month.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </div>
         )}
       </div>
-
-      {/* Click outside to close dropdowns */}
-      {(isMonthDropdownOpen || isMobileMenuOpen) && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => {
-            setIsMonthDropdownOpen(false);
-            setIsMobileMenuOpen(false);
-          }}
-        />
-      )}
     </nav>
   );
 }

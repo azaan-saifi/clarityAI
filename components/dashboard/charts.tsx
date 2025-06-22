@@ -317,6 +317,7 @@ interface FunnelDataPoint {
   value: number;
   displayValue: string;
   icon: React.ReactNode;
+  rawValue?: number;
 }
 
 interface ConversionCard {
@@ -402,10 +403,7 @@ export function FunnelWaveChart({
           },
           callback: function (value: string | number) {
             const numValue = Number(value);
-            if (numValue >= 1000) {
-              return (numValue / 1000).toFixed(1) + "K";
-            }
-            return numValue.toString();
+            return numValue.toFixed(1) + "%";
           },
           padding: 15,
         },
@@ -440,13 +438,17 @@ export function FunnelWaveChart({
         if (pointIndex > 0) {
           const fromPoint = data[pointIndex - 1];
           const toPoint = data[pointIndex];
-          const conversionRate = (toPoint.value / fromPoint.value) * 100;
+
+          // Use rawValue if available, otherwise use value
+          const fromValue = fromPoint.rawValue ?? fromPoint.value;
+          const toValue = toPoint.rawValue ?? toPoint.value;
+          const conversionRate = toPoint.value; // This is already the conversion percentage
 
           const conversion: ConversionCard = {
             fromStage: fromPoint.stage,
             toStage: toPoint.stage,
-            fromValue: fromPoint.value,
-            toValue: toPoint.value,
+            fromValue,
+            toValue,
             conversionRate,
             fromIcon: fromPoint.icon,
             toIcon: toPoint.icon,

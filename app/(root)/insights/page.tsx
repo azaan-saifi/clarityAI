@@ -1,7 +1,14 @@
+import { FadeUp } from "@/components/animations/fade-up";
+import { AIInsightsCallToAction } from "@/components/insights/ai-insights-cta";
+
 export default function Insights() {
   return (
-    <div className="flex items-center justify-center h-[calc(100vh-120px)]">
-      <h1 className="text-4xl font-bold text-white">Insights</h1>
+    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center p-6">
+      <div className="max-w-4xl mx-auto text-center">
+        <FadeUp>
+          <AIInsightsCallToAction />
+        </FadeUp>
+      </div>
     </div>
   );
 }
